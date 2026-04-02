@@ -1,0 +1,19 @@
+Options -Indexes
+RewriteEngine On
+
+# Serve uploaded files directly
+RewriteCond %{REQUEST_URI} ^/uploads/ [NC]
+RewriteRule ^ - [L]
+
+# Route everything else to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# CORS - izinkan dari Vue dev server dan production
+Header always set Access-Control-Allow-Origin "*"
+Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+Header always set Access-Control-Allow-Headers "Authorization, Content-Type, Accept"
+
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ index.php [QSA,L]
