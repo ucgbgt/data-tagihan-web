@@ -22,6 +22,10 @@ class Router {
         $method = strtoupper($_SERVER['REQUEST_METHOD']);
         $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $uri    = rtrim($uri, '/') ?: '/';
+        // Strip base path prefix (e.g. /tagihan) so routes match regardless of subdirectory
+        if (defined('APP_BASE_PATH') && APP_BASE_PATH !== '' && str_starts_with($uri, APP_BASE_PATH)) {
+            $uri = substr($uri, strlen(APP_BASE_PATH)) ?: '/';
+        }
 
         foreach ($this->routes as $route) {
             if ($route['method'] !== $method) continue;

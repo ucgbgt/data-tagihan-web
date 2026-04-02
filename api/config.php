@@ -1,4 +1,7 @@
 <?php
+// App base path (subdirectory on production)
+define('APP_BASE_PATH', '/tagihan');
+
 // Database
 define('DB_HOST', '127.0.0.1');
 define('DB_PORT', '3306');
