@@ -1,5 +1,14 @@
-Options -MultiViews
+Options -Indexes
 RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.html [QSA,L]
+
+# 1. File & folder statis (assets/, index.html, dll) — langsung serve
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 2. Request ke /tagihan/api/* — biarkan masuk ke api/ subfolder
+RewriteCond %{REQUEST_URI} ^/tagihan/api [NC]
+RewriteRule ^ - [L]
+
+# 3. Semua route Vue lainnya — arahkan ke index.html
+RewriteRule ^ index.html [L]
