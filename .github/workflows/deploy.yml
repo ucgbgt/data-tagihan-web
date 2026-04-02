@@ -28,24 +28,35 @@ jobs:
         working-directory: frontend
         run: npm run build
 
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
+
       - name: Deploy Frontend (dist) to FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ftp.xcuanmember.com
-          username: tagihan@xcuanmember.com
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          local-dir: ./frontend/dist/
-          server-dir: /
-          dangerous-clean-slate: true
+        env:
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -u "tagihan@xcuanmember.com,$FTP_PASS" ftp.xcuanmember.com <<'EOF'
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set ssl:verify-certificate false
+          set ftp:passive-mode true
+          set net:timeout 30
+          set net:max-retries 3
+          mirror -R --no-perms --delete --parallel=4 ./frontend/dist/ /
+          quit
+          EOF
 
       - name: Deploy API to FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ftp.xcuanmember.com
-          username: tagihan@xcuanmember.com
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          local-dir: ./api/
-          server-dir: /api/
-          dangerous-clean-slate: true
+        env:
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -u "tagihan@xcuanmember.com,$FTP_PASS" ftp.xcuanmember.com <<'EOF'
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set ssl:verify-certificate false
+          set ftp:passive-mode true
+          set net:timeout 30
+          set net:max-retries 3
+          mirror -R --no-perms --delete --parallel=4 ./api/ /api/
+          quit
+          EOF
