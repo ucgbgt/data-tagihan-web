@@ -36,7 +36,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
           local-dir: ./api/
-          server-dir: /public_html/tagihan/api/
+          server-dir: ./api/
 
       - name: Deploy Frontend (dist) to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -46,4 +46,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
           local-dir: ./frontend/dist/
-          server-dir: /public_html/tagihan/
+          server-dir: ./
