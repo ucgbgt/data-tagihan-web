@@ -1,6 +1,9 @@
 Options -Indexes
 RewriteEngine On
 
+# Teruskan Authorization header ke PHP (Apache sering strip ini)
+RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 # Serve uploaded files directly
 RewriteCond %{REQUEST_URI} ^/uploads/ [NC]
 RewriteRule ^ - [L]
