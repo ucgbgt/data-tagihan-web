@@ -1,4 +1,4 @@
-name: Build & Deploy via SSH
+name: Build & Deploy
 
 on:
   push:
@@ -35,16 +35,18 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H xcuanmember.com >> ~/.ssh/known_hosts
 
-      - name: Deploy Frontend (dist) to server
+      - name: Deploy Frontend (dist) ke server
         run: |
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -p 22" \
             ./frontend/dist/ \
             xcuanmember@xcuanmember.com:/home/xcuanmember/public_html/tagihan/
 
-      - name: Deploy API to server
+      - name: Deploy API ke server
         run: |
           rsync -avz --delete \
+            --exclude 'config.php' \
+            --exclude 'uploads/' \
             -e "ssh -i ~/.ssh/deploy_key -p 22" \
             ./api/ \
             xcuanmember@xcuanmember.com:/home/xcuanmember/public_html/tagihan/api/
