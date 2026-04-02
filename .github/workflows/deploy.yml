@@ -28,16 +28,6 @@ jobs:
         working-directory: frontend
         run: npm run build
 
-      - name: Deploy API to FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ftp.xcuanmember.com
-          username: tagihan@xcuanmember.com
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          local-dir: ./api/
-          server-dir: ./api/
-
       - name: Deploy Frontend (dist) to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -46,4 +36,16 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
           local-dir: ./frontend/dist/
-          server-dir: ./
+          server-dir: /
+          dangerous-clean-slate: true
+
+      - name: Deploy API to FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftp.xcuanmember.com
+          username: tagihan@xcuanmember.com
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          local-dir: ./api/
+          server-dir: /api/
+          dangerous-clean-slate: true
