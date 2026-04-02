@@ -31,7 +31,9 @@ class Auth {
 
     /** Validate token from Authorization header and return payload. Exits with 401 on failure. */
     public static function require(): array {
-        $header = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        $header = $_SERVER['HTTP_AUTHORIZATION']
+               ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
+               ?? (function_exists('getallheaders') ? (getallheaders()['Authorization'] ?? '') : '');
         if (!preg_match('/^Bearer\s+(.+)$/i', $header, $m)) {
             Response::error('Unauthorized', 401);
         }
