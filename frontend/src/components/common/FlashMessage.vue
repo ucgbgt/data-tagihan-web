@@ -1,11 +1,14 @@
 <template>
-  <Transition name="fade">
-    <div v-if="visible" class="alert" :class="typeClass">{{ message }}</div>
+  <Transition name="flash">
+    <div v-if="visible" class="alert" :class="`alert-${type}`" style="margin-bottom:.75rem">
+      <span>{{ type === 'success' ? '✓' : '⚠' }}</span>
+      {{ message }}
+    </div>
   </Transition>
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   message: String,
@@ -14,8 +17,6 @@ const props = defineProps({
 
 const visible = ref(false)
 let timer = null
-
-const typeClass = computed(() => `alert-${props.type}`)
 
 watch(() => props.message, (val) => {
   if (!val) return
@@ -26,6 +27,8 @@ watch(() => props.message, (val) => {
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active { transition: opacity .3s, transform .3s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(-6px); }
+.flash-enter-active { transition: all .25s ease; }
+.flash-leave-active { transition: all .2s ease; }
+.flash-enter-from   { opacity: 0; transform: translateY(-8px); }
+.flash-leave-to     { opacity: 0; transform: translateY(-4px); }
 </style>

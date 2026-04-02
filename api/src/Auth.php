@@ -29,13 +29,36 @@ class Auth {
         return $data;
     }
 
+    /** Baca Authorization header dari semua kemungkinan sumber */
+    private static function getAuthHeader(): string {
+        // 1. Standard
+        if (!empty($_SERVER['HTTP_AUTHORIZATION'])) return $_SERVER['HTTP_AUTHORIZATION'];
+        // 2. Setelah mod_rewrite redirect
+        if (!empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) return $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        // 3. PHP-CGI / FastCGI via SetEnvIf
+        if (!empty($_ENV['HTTP_AUTHORIZATION'])) return $_ENV['HTTP_AUTHORIZATION'];
+        // 4. getallheaders() — case-insensitive
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            foreach ($headers as $k => $v) {
+                if (strtolower($k) === 'authorization') return $v;
+            }
+        }
+        // 5. apache_request_headers() sebagai alias
+        if (function_exists('apache_request_headers')) {
+            $headers = apache_request_headers();
+            foreach ($headers as $k => $v) {
+                if (strtolower($k) === 'authorization') return $v;
+            }
+        }
+        return '';
+    }
+
     /** Validate token from Authorization header and return payload. Exits with 401 on failure. */
     public static function require(): array {
-        $header = $_SERVER['HTTP_AUTHORIZATION']
-               ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
-               ?? (function_exists('getallheaders') ? (getallheaders()['Authorization'] ?? '') : '');
+        $header = self::getAuthHeader();
         if (!preg_match('/^Bearer\s+(.+)$/i', $header, $m)) {
-            Response::error('Unauthorized', 401);
+            Response::error('Token tidak ditemukan', 401);
         }
         $payload = self::verifyToken(trim($m[1]));
         if (!$payload) {
